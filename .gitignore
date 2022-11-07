@@ -1,4 +1,5 @@
 .vs/
 AnyStore/obj/
 AnyStore/bin/
-
+AnyStore.Tests/bin/
+AnyStore.Tests/obj/
