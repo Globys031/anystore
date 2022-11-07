@@ -50,3 +50,12 @@ Username: user
 Password: user
 
 For any queries, Email at - hi@vijaythapa.com
+
+## Projekto paleidimas
+
+0. Perskaitykit https://github.com/vijaythapa333/anystore#instructions-to-use prie6 pradedant.
+1. Parsisiųskit https://learn.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver16
+2. Restore pagal šitą gidą (4:21) https://youtu.be/_yF5Kh_MMKo?list=PLBLPjjQlnVXXH_1g7ApcuIGPWRzMEKreK&t=259
+3. Windows knisa protą del virusų paleidžiant `.exe` failą. Išjunkit lauk apsaugą: https://www.youtube.com/watch?v=_0_A9D0JeVo&ab_channel=MJTube
+4. Jeigu bus problemos su `connectionString`, susiraskit ji pagal žemiau aprašyta 8. ir 9. žingsnius: 
+https://www.c-sharpcorner.com/UploadFile/d40a40/get-sql-server-database-connection-string-easily-from-visual/#:~:text=Right%2Dclick%20on%20your%20connection,use%20it%20anywhere%20you%20want.
