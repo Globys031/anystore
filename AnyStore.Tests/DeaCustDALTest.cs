@@ -119,6 +119,29 @@ namespace AnyStore.Tests
             Assert.Equal(expectedResult, result);
         }
 
+        [Fact]
+        public void IntegrationTests_Insert_correctParams_return_true()
+        {
+            // Prepare
+            bool expectedResult = true;
+
+            IDeaCustRepository repo = new DeaCustDAL();
+
+            DeaCustBLL dc = new DeaCustBLL();
+            dc.type = "user";
+            dc.name = "user";
+            dc.email = "user@email.com";
+            dc.contact = "8972937278";
+            dc.address = "address";
+            dc.added_date = DateTime.Now;
+            dc.added_by = 3;
+
+            // Act
+            bool result = repo.Insert(dc);
+            // Assert
+            Assert.Equal(expectedResult, result);
+        }
+
 
 
 
