@@ -14,10 +14,48 @@ namespace AnyStore.UI
 {
     public partial class frmDeaCust : Form
     {
+        private IDeaCustRepository _deaCustRepository;
+        private DeaCustBLL _dc;
+
+        // Constructor used for production
         public frmDeaCust()
         {
+            this._deaCustRepository = new DeaCustDAL();
+            this._dc = new DeaCustBLL();
+
             InitializeComponent();
         }
+
+        ////////////////////////////////
+        // Constructors used for testing start
+        ////////////////////////////////
+        public frmDeaCust(IDeaCustRepository deaCustRepository)
+        {
+            this._deaCustRepository = deaCustRepository;
+            this._dc = new DeaCustBLL();
+
+            InitializeComponent();
+        }
+
+        //public frmDeaCust(IDeaCustRepository deaCustRepository, ComboBox mockComboBox, TextBox mockName, TextBox mockEmail, TextBox mockContact, TextBox mockAddress, MessageBox mockMessageBox)
+        //{
+        //    this._deaCustRepository = deaCustRepository;
+
+        //    DeaCustBLL _dc = new DeaCustBLL();
+        //    _dc.type = mockComboBox.Text;
+        //    _dc.name = mockName.Text;
+        //    _dc.email = mockEmail.Text;
+        //    _dc.contact = mockContact.Text;
+        //    _dc.address = mockAddress.Text;
+
+        //    _messageBox = mockMessageBox;
+
+        //    InitializeComponent();
+        //}
+        ////////////////////////////////
+        // Constructors used for testing end
+        ////////////////////////////////
+
 
         private void pictureBoxClose_Click(object sender, EventArgs e)
         {
@@ -25,26 +63,22 @@ namespace AnyStore.UI
             this.Hide();
         }
 
-        DeaCustBLL dc = new DeaCustBLL();
-        DeaCustDAL dcDal = new DeaCustDAL();
-
         userDAL uDal = new userDAL();
-        private void btnAdd_Click(object sender, EventArgs e)
+        public void btnAdd_Click(object sender, EventArgs e)
         {
-            //Get the Values from Form
-            dc.type = cmbDeaCust.Text;
-            dc.name = txtName.Text;
-            dc.email = txtEmail.Text;
-            dc.contact = txtContact.Text;
-            dc.address = txtAddress.Text;
-            dc.added_date = DateTime.Now;
+            _dc.type = cmbDeaCust.Text;
+            _dc.name = txtName.Text;
+            _dc.email = txtEmail.Text;
+            _dc.contact = txtContact.Text;
+            _dc.address = txtAddress.Text;
+            _dc.added_date = DateTime.Now;
             //Getting the ID to Logged in user and passign its value in dealer or cutomer module
             string loggedUsr = frmLogin.loggedIn;
             userBLL usr = uDal.GetIDFromUsername(loggedUsr);
-            dc.added_by = usr.id;
+            _dc.added_by = usr.id;
 
             //Creating boolean variable to check whether the dealer or cutomer is added or not
-            bool success = dcDal.Insert(dc);
+            bool success = _deaCustRepository.Insert(_dc);
 
             if(success==true)
             {
@@ -52,13 +86,12 @@ namespace AnyStore.UI
                 MessageBox.Show("Dealer or Customer Added Successfully");
                 Clear();
                 //Refresh Data Grid View
-                DataTable dt = dcDal.Select();
+                DataTable dt = _deaCustRepository.Select();
                 dgvDeaCust.DataSource = dt;
+
+                return;
             }
-            else
-            {
-                //failed to insert dealer or customer
-            }
+            //failed to insert dealer or customer
         }
         public void Clear()
         {
@@ -73,7 +106,7 @@ namespace AnyStore.UI
         private void frmDeaCust_Load(object sender, EventArgs e)
         {
             //Refresh Data Grid View
-            DataTable dt = dcDal.Select();
+            DataTable dt = _deaCustRepository.Select();
             dgvDeaCust.DataSource = dt;
         }
 
@@ -93,20 +126,20 @@ namespace AnyStore.UI
         private void btnUpdate_Click(object sender, EventArgs e)
         {
             //Get the values from Form
-            dc.id = int.Parse(txtDeaCustID.Text);
-            dc.type = cmbDeaCust.Text;
-            dc.name = txtName.Text;
-            dc.email = txtEmail.Text;
-            dc.contact = txtContact.Text;
-            dc.address = txtAddress.Text;
-            dc.added_date = DateTime.Now;
+            _dc.id = int.Parse(txtDeaCustID.Text);
+            _dc.type = cmbDeaCust.Text;
+            _dc.name = txtName.Text;
+            _dc.email = txtEmail.Text;
+            _dc.contact = txtContact.Text;
+            _dc.address = txtAddress.Text;
+            _dc.added_date = DateTime.Now;
             //Getting the ID to Logged in user and passign its value in dealer or cutomer module
             string loggedUsr = frmLogin.loggedIn;
             userBLL usr = uDal.GetIDFromUsername(loggedUsr);
-            dc.added_by = usr.id;
+            _dc.added_by = usr.id;
 
             //create boolean variable to check whether the dealer or customer is updated or not
-            bool success = dcDal.Update(dc);
+            bool success = _deaCustRepository.Update(_dc);
             
             if(success==true)
             {
@@ -114,7 +147,7 @@ namespace AnyStore.UI
                 MessageBox.Show("Dealer or Customer updated Successfully");
                 Clear();
                 //Refresh the Data Grid View
-                DataTable dt = dcDal.Select();
+                DataTable dt = _deaCustRepository.Select();
                 dgvDeaCust.DataSource = dt;
             }
             else
@@ -127,10 +160,10 @@ namespace AnyStore.UI
         private void btnDelete_Click(object sender, EventArgs e)
         {
             //Get the id of the user to be deleted from form
-            dc.id = int.Parse(txtDeaCustID.Text);
+            _dc.id = int.Parse(txtDeaCustID.Text);
 
             //Create boolean variable to check wheteher the dealer or customer is deleted or not
-            bool success = dcDal.Delete(dc);
+            bool success = _deaCustRepository.Delete(_dc);
 
             if(success==true)
             {
@@ -138,7 +171,7 @@ namespace AnyStore.UI
                 MessageBox.Show("Dealer or Customer Deleted Successfully");
                 Clear();
                 //Refresh the Data Grid View
-                DataTable dt = dcDal.Select();
+                DataTable dt = _deaCustRepository.Select();
                 dgvDeaCust.DataSource = dt;
             }
             else
@@ -156,13 +189,13 @@ namespace AnyStore.UI
             if(keyword!=null)
             {
                 //Search the Dealer or Customer
-                DataTable dt = dcDal.Search(keyword);
+                DataTable dt = _deaCustRepository.Search(keyword);
                 dgvDeaCust.DataSource = dt;
             }
             else
             {
                 //Show all the Dealer or Customer
-                DataTable dt = dcDal.Select();
+                DataTable dt = _deaCustRepository.Select();
                 dgvDeaCust.DataSource = dt;
             }
         }
