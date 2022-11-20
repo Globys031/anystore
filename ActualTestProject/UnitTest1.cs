@@ -95,6 +95,7 @@ namespace ActualTestProject
             Assert.IsFalse(result);
         }
 
+        // This test fails: i.e. we found a bug
         [Test]
         public void Insert_ShowingMessageThrowsException_ExceptionCaught()
         {
@@ -110,6 +111,48 @@ namespace ActualTestProject
 
             // Assert
             Assert.DoesNotThrow(delegate { act.Invoke(); });
+        }
+
+        [Test]
+        public void Integration_Insert_QueryCorrectParams_ReturnsTrue()
+        {
+            // Prepare
+            IDeaCustRepository repo = new DeaCustDAL(new SqlConnection(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=AnyStore;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False"), new ConcreteDependencyForTestPurposes());
+
+            DeaCustBLL dc = new DeaCustBLL();
+            dc.type = "user";
+            dc.name = "user";
+            dc.email = "user@email.com";
+            dc.contact = "8972937278";
+            dc.address = "address";
+            dc.added_date = DateTime.Now;
+            dc.added_by = 3;
+
+            // Act
+            bool result = repo.Insert(dc);
+            // Assert
+            Assert.IsTrue(result);
+        }
+
+        [Test]
+        public void Integration_Insert_QueryCorrectParams_ReturnsFalse()
+        {
+            // Prepare
+            IDeaCustRepository repo = new DeaCustDAL(new SqlConnection(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=AnyStore;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False"), new ConcreteDependencyForTestPurposes());
+
+            DeaCustBLL dc = new DeaCustBLL();
+            dc.type = null;
+            dc.name = "user";
+            dc.email = "useremail.com";
+            dc.contact = "8972937-278";
+            dc.address = "address";
+            dc.added_date = DateTime.Now;
+            dc.added_by = 3;
+
+            // Act
+            bool result = repo.Insert(dc);
+            // Assert
+            Assert.IsFalse(result);
         }
     }
 }
