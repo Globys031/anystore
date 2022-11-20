@@ -1,15 +1,12 @@
-using System;
+/*using System;
 using Xunit;
 using Moq;
 using AnyStore.DAL;
 using System.Data;
 using AnyStore.BLL;
-using AnyStore.UI;
-using NuGet.Frameworks;
 using AnyStore.TDD;
-using System.Xml.Linq;
-using System.Windows.Forms;
-using System.Data.Common;
+using System.Data;
+using System.Data.SqlClient;
 
 //////////////////////////////////////////////////////////////////////////////////////
 // !!!! naming convention: nameOfMethod_when_passedValue_return_returnedResult !!!! //
@@ -41,19 +38,48 @@ namespace AnyStore.Tests
             Assert.Equal(expectedResult.Columns, result.Columns);
         }
 
-
+        public partial class SqlCommand 
+        {
+            public void AddWithValue(string str, object o) { }
+        }
         [Fact]
-        public void Insert_when_null_return_false()
+        public void Insert_when_connection_closed_return_false()
         {
             // Prepare
-            bool expectedResult = false;
+            // mock DB
+            var connection = new Mock<IDbConnection>();
+            connection.Setup(d => d.Open()).Verifiable();
+            connection.Setup(d => d.State).Returns(ConnectionState.Closed);
+            var db = new DeaCustDAL(connection.Object);
 
-            DeaCustBLL dc = null;
+            var cmd = new Mock<SqlCommand>();
+            cmd.Setup(d => d.Open()).Verifiable();
+            cmd.Setup(d => d.State).Returns(ConnectionState.Closed);
+            DeaCustBLL dc = new DeaCustBLL();
+
+            // Act
+            bool result = db.Insert(dc, cmd);
+
+            // Assert
+            Assert.Equal(false, result);
+        }
+
+        [Fact]
+        public void Insert_when_connection_open_close_before_return()
+        {
+            // Prepare
+            var connection = new Mock<IDbConnection>();
+            connection.Setup(d => d.Open()).Verifiable();
+            connection.Setup(d => d.State).Returns(ConnectionState.Open);
+            var db = new DeaCustDAL(connection.Object);
+
+            DeaCustBLL dc = new DeaCustBLL();
 
             // Act
             bool result = _inMemoryRepo.Insert(dc);
+
             // Assert
-            Assert.Equal(expectedResult, result);
+            Assert.Equal(true, result);
         }
 
         [Fact]
@@ -142,7 +168,26 @@ namespace AnyStore.Tests
             Assert.Equal(expectedResult, result);
         }
 
+        // Mato T parasyti testai:
+        [Fact]
+        public void Update_when_correctParams_return_true()
+        {
 
+
+            DeaCustBLL dc = new DeaCustBLL();
+            dc.type = "user";
+            dc.name = "user";
+            dc.email = "user@email.com";
+            dc.contact = "8972937278";
+            dc.address = "address";
+            dc.added_date = DateTime.Now;
+            dc.added_by = 3;
+
+            // Act
+            bool result = _inMemoryRepo.Insert(dc);
+            // Assert
+           // Assert.Equal(expectedResult, result);
+        }
 
 
 
@@ -217,3 +262,4 @@ namespace AnyStore.Tests
         //}
     }
 }
+*/

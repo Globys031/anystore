@@ -25,7 +25,7 @@ namespace AnyStore.UI
         {
             this.Hide();
         }
-        DeaCustDAL dcDAL = new DeaCustDAL();
+        DeaCustDAL dcDAL = new DeaCustDAL(new ConcreteDependencyForTestPurposes());
         productsDAL pDAL = new productsDAL();
         userDAL uDAL = new userDAL();
         transactionDAL tDAL = new transactionDAL();

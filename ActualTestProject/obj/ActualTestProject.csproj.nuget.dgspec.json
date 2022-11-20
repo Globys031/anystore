@@ -1,0 +1,89 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Users\\mtunk\\source\\repos\\anystore\\ActualTestProject\\ActualTestProject.csproj": {}
+  },
+  "projects": {
+    "C:\\Users\\mtunk\\source\\repos\\anystore\\ActualTestProject\\ActualTestProject.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\mtunk\\source\\repos\\anystore\\ActualTestProject\\ActualTestProject.csproj",
+        "projectName": "ActualTestProject",
+        "projectPath": "C:\\Users\\mtunk\\source\\repos\\anystore\\ActualTestProject\\ActualTestProject.csproj",
+        "packagesPath": "C:\\Users\\mtunk\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\mtunk\\source\\repos\\anystore\\ActualTestProject\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\mtunk\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net452"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net452": {
+            "targetAlias": "net452",
+            "projectReferences": {
+              "C:\\Users\\mtunk\\source\\repos\\anystore\\AnyStore\\AnyStore.csproj": {
+                "projectPath": "C:\\Users\\mtunk\\source\\repos\\anystore\\AnyStore\\AnyStore.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net452": {
+          "targetAlias": "net452",
+          "dependencies": {
+            "Microsoft.NET.Test.Sdk": {
+              "target": "Package",
+              "version": "[16.5.0, )"
+            },
+            "Moq": {
+              "target": "Package",
+              "version": "[4.8.0, )"
+            },
+            "NUnit": {
+              "target": "Package",
+              "version": "[3.12.0, )"
+            },
+            "NUnit3TestAdapter": {
+              "target": "Package",
+              "version": "[3.16.1, )"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.411\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\mtunk\\source\\repos\\anystore\\AnyStore\\AnyStore.csproj": {
+      "restore": {
+        "projectUniqueName": "C:\\Users\\mtunk\\source\\repos\\anystore\\AnyStore\\AnyStore.csproj",
+        "projectName": "AnyStore",
+        "projectPath": "C:\\Users\\mtunk\\source\\repos\\anystore\\AnyStore\\AnyStore.csproj",
+        "frameworks": {
+          "net452": {
+            "projectReferences": {}
+          }
+        }
+      },
+      "frameworks": {
+        "net452": {}
+      }
+    }
+  }
+}

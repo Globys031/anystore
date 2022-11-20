@@ -11,16 +11,70 @@ using System.Windows.Forms;
 
 namespace AnyStore.DAL
 {
+    // We must abstract away all dependencies so we can test ONLY this class (purpose of unit test)
+    // Then we can use dependency injection to mock all dependencies
+    public interface IDependency
+    {
+        void MakeNewCommand(string query, IDbConnection dbConnection);
+
+        void AddValues(DeaCustBLL dc);
+
+        void AddDeleteValues(DeaCustBLL dc);
+
+        int ExecuteCommand();
+
+        void ShowMessage(string msg);
+    }
+
+    public class ConcreteDependencyForTestPurposes : IDependency
+    {
+        SqlCommand cmd;
+        public void MakeNewCommand(string query, IDbConnection dbConnection)
+        {
+            cmd = new SqlCommand(query, (SqlConnection)dbConnection);
+        }
+
+        public void AddValues(DeaCustBLL dc)
+        {
+            cmd.Parameters.AddWithValue("@type", dc.type);
+            cmd.Parameters.AddWithValue("@name", dc.name);
+            cmd.Parameters.AddWithValue("@email", dc.email);
+            cmd.Parameters.AddWithValue("@contact", dc.contact);
+            cmd.Parameters.AddWithValue("@address", dc.address);
+            cmd.Parameters.AddWithValue("@added_date", dc.added_date);
+            cmd.Parameters.AddWithValue("@added_by", dc.added_by);
+        }
+
+        public void AddDeleteValues(DeaCustBLL dc)
+        {
+            cmd.Parameters.AddWithValue("@id", dc.id);
+        }
+
+        public int ExecuteCommand()
+        {
+            return cmd.ExecuteNonQuery();
+        }
+
+        public void ShowMessage(string msg)
+        {
+            MessageBox.Show(msg);
+        }
+    }
+
     public class DeaCustDAL : IDeaCustRepository
     {
         public IDbConnection _dbConnection;
+        public IDependency dep;
+        public SqlCommand cmd;
 
-        public DeaCustDAL() {
+        public DeaCustDAL(IDependency dep) {
             _dbConnection = new SqlConnection(ConfigurationManager.ConnectionStrings["connstrng"].ConnectionString);
+            this.dep = dep;
         }
 
-        public DeaCustDAL(IDbConnection connection)
+        public DeaCustDAL(IDbConnection connection, IDependency dep)
         {
+            this.dep = dep;
             _dbConnection = connection;
         }
 
@@ -72,21 +126,15 @@ namespace AnyStore.DAL
                 string sql = "INSERT INTO tbl_dea_cust (type, name, email, contact, address, added_date, added_by) VALUES (@type, @name, @email, @contact, @address, @added_date, @added_by)";
 
                 //SQl Command to Pass the values to query and execute
-                SqlCommand cmd = new SqlCommand(sql, (SqlConnection)_dbConnection);
+                dep.MakeNewCommand(sql, _dbConnection);
                 //Passing the calues using Parameters
-                cmd.Parameters.AddWithValue("@type", dc.type);
-                cmd.Parameters.AddWithValue("@name", dc.name);
-                cmd.Parameters.AddWithValue("@email", dc.email);
-                cmd.Parameters.AddWithValue("@contact", dc.contact);
-                cmd.Parameters.AddWithValue("@address", dc.address);
-                cmd.Parameters.AddWithValue("@added_date", dc.added_date);
-                cmd.Parameters.AddWithValue("@added_by", dc.added_by);
+                dep.AddValues(dc);
 
                 //Open DAtabaseConnection
                 _dbConnection.Open();
 
                 //Int variable to check whether the query is executed successfully or not
-                int rows = cmd.ExecuteNonQuery();
+                int rows = dep.ExecuteCommand();
 
                 //If the query is executed successfully then the value of rows will be greater than 0 else it will be less than 0
                 if(rows>0)
@@ -102,7 +150,7 @@ namespace AnyStore.DAL
             }
             catch(Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                dep.ShowMessage(ex.Message);
             }
             finally
             {
@@ -122,23 +170,16 @@ namespace AnyStore.DAL
                 //SQL Query to update data in database
                 string sql = "UPDATE tbl_dea_cust SET type=@type, name=@name, email=@email, contact=@contact, address=@address, added_date=@added_date, added_by=@added_by WHERE id=@id";
                 //Create SQL Command to pass the value in sql
-                SqlCommand cmd = new SqlCommand(sql, (SqlConnection)_dbConnection);
+                dep.MakeNewCommand(sql, _dbConnection);
 
                 //Passing the values through parameters
-                cmd.Parameters.AddWithValue("@type", dc.type);
-                cmd.Parameters.AddWithValue("@name", dc.name);
-                cmd.Parameters.AddWithValue("@email", dc.email);
-                cmd.Parameters.AddWithValue("@contact", dc.contact);
-                cmd.Parameters.AddWithValue("@address", dc.address);
-                cmd.Parameters.AddWithValue("@added_date", dc.added_date);
-                cmd.Parameters.AddWithValue("@added_by", dc.added_by);
-                cmd.Parameters.AddWithValue("@id", dc.id);
+                dep.AddValues(dc);
 
                 //open the Database Connection
                 _dbConnection.Open();
 
                 //Int varialbe to check if the query executed successfully or not
-                int rows = cmd.ExecuteNonQuery();
+                int rows = dep.ExecuteCommand();
                 if(rows>0)
                 {
                     //Query Executed Successfully 
@@ -152,7 +193,7 @@ namespace AnyStore.DAL
             }
             catch(Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                dep.ShowMessage(ex.Message);
             }
             finally
             {
@@ -173,14 +214,14 @@ namespace AnyStore.DAL
                 string sql = "DELETE FROM tbl_dea_cust WHERE id=@id";
 
                 //SQL command to pass the value
-                SqlCommand cmd = new SqlCommand(sql, (SqlConnection)_dbConnection);
+                dep.MakeNewCommand(sql, _dbConnection);
                 //Passing the value
-                cmd.Parameters.AddWithValue("@id", dc.id);
+                dep.AddDeleteValues(dc);
 
                 //Open DB Connection
                 _dbConnection.Open();
                 //integer variable
-                int rows = cmd.ExecuteNonQuery();
+                var rows = dep.ExecuteCommand();
                 if(rows>0)
                 {
                     //Query Executed Successfully 
@@ -194,7 +235,7 @@ namespace AnyStore.DAL
             }
             catch(Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                dep.ShowMessage(ex.Message);
             }
             finally
             {

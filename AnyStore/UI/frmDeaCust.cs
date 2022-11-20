@@ -20,7 +20,7 @@ namespace AnyStore.UI
         // Constructor used for production
         public frmDeaCust()
         {
-            this._deaCustRepository = new DeaCustDAL();
+            this._deaCustRepository = new DeaCustDAL(new ConcreteDependencyForTestPurposes());
             this._dc = new DeaCustBLL();
 
             InitializeComponent();
