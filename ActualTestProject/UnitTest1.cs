@@ -113,6 +113,139 @@ namespace ActualTestProject
             Assert.DoesNotThrow(delegate { act.Invoke(); });
         }
 
+        /// <summary>
+        /// J. G. start
+        /// </summary>
+        ///////////////////////////////////////////////////////////////////////////////////////
+        // naming conventio used: nameOfMethod_when_passedValue_return_returnedResult       //
+        //////////////////////////////////////////////////////////////////////////////////////
+
+        [Test]
+        public void Update_when_passedCorrectParams_return_true()
+        {
+            // Prepare
+            DeaCustBLL dc = new DeaCustBLL();
+            dc.type = "user";
+            dc.name = "user";
+            dc.email = "user@email.com";
+            dc.contact = "8972937278";
+            dc.address = "address";
+            dc.added_date = DateTime.Now;
+            dc.added_by = 3;
+            // Set up dependency injection
+            var dependencyInjection = new Mock<IDependency>();
+            dependencyInjection.Setup(d => d.AddValues(dc));
+            dependencyInjection.Setup(d => d.ExecuteCommand()).Returns(1);
+            dal = new DeaCustDAL(connectionMock.Object, dependencyInjection.Object);
+
+            // Act
+            bool result = dal.Update(dc);
+
+            // Assert
+            Assert.IsTrue(result);
+        }
+
+        // If updating, we should check if there's any value that isn't just an empty string
+        // or 0. If nothing was set, it should return false (couldn't update).
+        [Test]
+        public void Update_when_passedEmptyParams_return_false()
+        {
+            // Prepare
+            DeaCustBLL dc = new DeaCustBLL();
+            dc.type = "";
+            dc.name = "";
+            dc.email = "";
+            dc.contact = "";
+            dc.address = "";
+            dc.added_date = DateTime.Now;
+            dc.added_by = 3;
+            // Set up dependency injection
+            var dependencyInjection = new Mock<IDependency>();
+            dependencyInjection.Setup(d => d.AddValues(dc));
+            dependencyInjection.Setup(d => d.ExecuteCommand()).Returns(0);
+            dal = new DeaCustDAL(connectionMock.Object, dependencyInjection.Object);
+
+            // Act
+            bool result = dal.Update(dc);
+
+            // Assert
+            Assert.IsFalse(result);
+        }
+
+        // Can't use null as an update value
+        [Test]
+        public void Update_when_passed_null_return_false()
+        {
+            // Prepare
+            DeaCustBLL dc = null;
+            // Set up dependency injection
+            var dependencyInjection = new Mock<IDependency>();
+            dependencyInjection.Setup(d => d.AddValues(dc));
+            dependencyInjection.Setup(d => d.ExecuteCommand()).Returns(0);
+            dal = new DeaCustDAL(connectionMock.Object, dependencyInjection.Object);
+
+            // Act
+            bool result = dal.Update(dc);
+
+            // Assert
+            Assert.IsFalse(result);
+        }
+
+        [Test]
+        public void Update_when_emailIncorrectFormat_return_false()
+        {
+            // Prepare
+            DeaCustBLL dc = new DeaCustBLL();
+            dc.type = "user";
+            dc.name = "user";
+            dc.email = "not a correct email format lmao";
+            dc.contact = "8972937278";
+            dc.address = "address";
+            dc.added_date = DateTime.Now;
+            dc.added_by = 3;
+            // Set up dependency injection
+            var dependencyInjection = new Mock<IDependency>();
+            dependencyInjection.Setup(d => d.AddValues(dc));
+            dependencyInjection.Setup(d => d.ExecuteCommand()).Returns(0);
+            dal = new DeaCustDAL(connectionMock.Object, dependencyInjection.Object);
+
+            // Act
+            bool result = dal.Update(dc);
+
+            // Assert
+            Assert.IsFalse(result);
+        }
+
+        [Test]
+        public void Update_when_addedByParamterIsEqualToZero_return_false()
+        {
+            // Prepare
+            DeaCustBLL dc = new DeaCustBLL();
+            dc.type = "user";
+            dc.name = "user";
+            dc.email = "user@email.com";
+            dc.contact = "8972937278";
+            dc.address = "address";
+            dc.added_date = DateTime.Now;
+            dc.added_by = 0;
+            // Set up dependency injection
+            var dependencyInjection = new Mock<IDependency>();
+            dependencyInjection.Setup(d => d.AddValues(dc));
+            dependencyInjection.Setup(d => d.ExecuteCommand()).Returns(0);
+            dal = new DeaCustDAL(connectionMock.Object, dependencyInjection.Object);
+
+            // Act
+            bool result = dal.Update(dc);
+
+            // Assert
+            Assert.IsFalse(result);
+        }
+        //
+        /// <summary>
+        /// J. G. END
+        /// </summary>
+
+
         [Test]
         public void Integration_Insert_QueryCorrectParams_ReturnsTrue()
         {
