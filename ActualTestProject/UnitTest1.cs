@@ -470,6 +470,24 @@ namespace ActualTestProject
             connectionMock.Verify(d => d.Close(), Times.Once());
         }
 
+        // should fail
+        [Test]
+        public void Delete_ShowingMessageThrowsException_ExceptionCaught()
+        {
+            // Prepare
+            // Set up dependency injection
+            var dependencyInjection = new Mock<IDependency>();
+            dependencyInjection.Setup(d => d.ExecuteCommand()).Throws(new Exception());
+            dependencyInjection.Setup(d => d.ShowMessage(It.IsAny<string>())).Throws(new Exception());
+            dal = new DeaCustDAL(connectionMock.Object, dependencyInjection.Object);
+
+            // Act
+            Action act = () => dal.Delete(dc);
+
+            // Assert
+            Assert.DoesNotThrow(delegate { act.Invoke(); });
+        }
+
         [Test]
         public void Integration_Delete_AfterInsertion_ReturnsTrue()
         {
