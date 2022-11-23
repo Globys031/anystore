@@ -24,6 +24,7 @@ namespace AnyStore.DAL
         int ExecuteCommand();
 
         void ShowMessage(string msg);
+        DataTable FillTheTable();
     }
 
     public class ConcreteDependencyForTestPurposes : IDependency
@@ -58,6 +59,13 @@ namespace AnyStore.DAL
         public void ShowMessage(string msg)
         {
             MessageBox.Show(msg);
+        }
+        public DataTable FillTheTable()
+        {
+            DataTable dt = new DataTable();
+            SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+            adapter.Fill(dt);
+            return dt;
         }
     }
 
@@ -248,22 +256,21 @@ namespace AnyStore.DAL
         #region SEARCH METHOD for Dealer and Customer Module
         public DataTable Search(string keyword)
         {
-            DataTable dt = new DataTable();
+            DataTable dt = null;
 
             try
             {
                 //Write the Query to Search Dealer or Customer Based in id, type and name
                 string sql = "SELECT * FROM tbl_dea_cust WHERE id LIKE '%"+keyword+"%' OR type LIKE '%"+keyword+"%' OR name LIKE '%"+keyword+"%'";
-
-                //Sql Command to Execute the Query
-                SqlCommand cmd = new SqlCommand(sql, (SqlConnection)_dbConnection);
-                //Sql Dat Adapeter to hold tthe data from dataase temporarily
-                SqlDataAdapter adapter = new SqlDataAdapter(cmd);
-
-                //Open DAta Base Connection
+                
+                //SQL command to pass the value
+                dep.MakeNewCommand(sql, _dbConnection);
+                
+                //Open DB Connection
                 _dbConnection.Open();
-                //Pass the value from adapter to data table
-                adapter.Fill(dt);
+                var rows = dep.ExecuteCommand();
+
+                dt = dep.FillTheTable();
             }
             catch(Exception ex)
             {
@@ -275,6 +282,7 @@ namespace AnyStore.DAL
             }
 
             return dt;
+           
         }
         #endregion
         #region METHOD TO SAERCH DEALER Or CUSTOMER FOR TRANSACTON MODULE
@@ -288,14 +296,15 @@ namespace AnyStore.DAL
 
             try
             {
+                //Open the DAtabase Connection
+                _dbConnection.Open();
                 //Write a SQL Query to Search Dealer or Customer Based on Keywords
                 string sql = "SELECT name, email, contact, address from tbl_dea_cust WHERE id LIKE '%"+keyword+"%' OR name LIKE '%"+keyword+"%'";
 
                 //Create a Sql Data Adapter to Execute the Query
                 SqlDataAdapter adapter = new SqlDataAdapter(sql, (SqlConnection)_dbConnection);
+                //new SqlDataAdapter()
 
-                //Open the DAtabase Connection
-                _dbConnection.Open();
 
                 //Transfer the data from SqlData Adapter to DAta Table
                 adapter.Fill(dt);

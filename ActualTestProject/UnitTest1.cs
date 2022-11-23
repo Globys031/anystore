@@ -15,8 +15,7 @@ namespace ActualTestProject
     // 4. Add any dependencies to ConcreteDependency and use DependencyInjection!!!
     public class UnitTests
     {
-        Mock<IDbConnection>             connectionMock;
-
+        Mock<IDbConnection> connectionMock;
         DeaCustBLL dc;
         DeaCustDAL dal;
         [SetUp]
@@ -245,6 +244,100 @@ namespace ActualTestProject
         /// J. G. END
         /// </summary>
 
+        /// <summary>
+        /// T. S. start
+        /// </summary>
+        [Test]
+        public void Search_when_keywordValueIsNull_returnsNullValue()
+        {
+            string keyword = null;
+            DeaCustBLL dc = new DeaCustBLL { type = "Dealer", name = "Test1", email = "test@gmail.com", address = "Germany", contact = "12354", added_date = DateTime.Now, added_by = 7 };
+            DeaCustBLL dc2 = new DeaCustBLL { type = "Dealer", name = "Test2", email = "test2@gmail.com", address = "Germany", contact = "1235467", added_date = DateTime.Now, added_by = 7 };
+            // Set up dependency injection
+            var dependencyInjection = new Mock<IDependency>();
+            dependencyInjection.Setup(d => d.AddValues(dc));
+            dependencyInjection.Setup(d => d.AddValues(dc2));
+            dal = new DeaCustDAL(connectionMock.Object, dependencyInjection.Object);
+
+            // Act
+            DataTable result = dal.Search(keyword);
+            // Assert
+            Assert.IsNull(result);
+        }
+        [Test]
+        public void Search_when_keywordValueMatch_returnSuccess()
+        {
+            string keyword = "Dealer";
+            DeaCustBLL dc = new DeaCustBLL { type = "Dealer", name = "Test1", email = "test@gmail.com", address = "Germany", contact = "12354", added_date = DateTime.Now, added_by = 7 };
+            DeaCustBLL dc2 = new DeaCustBLL { type = "Dealer", name = "Test2", email = "test2@gmail.com", address = "Germany", contact = "1235467", added_date = DateTime.Now, added_by = 7 };
+            DataTable dt = new DataTable(); dt.Columns.Add();
+            dt.Rows.Add(dc); dt.Rows.Add(dc2);
+            // Set up dependency injection
+            var dependencyInjection = new Mock<IDependency>();
+            dependencyInjection.Setup(d => d.AddValues(dc));
+            dependencyInjection.Setup(d => d.AddValues(dc2));
+            dependencyInjection.Setup(d => d.FillTheTable()).Returns(dt);
+            dal = new DeaCustDAL(connectionMock.Object, dependencyInjection.Object);
+
+            // Act
+            DataTable result = dal.Search(keyword);
+            // Assert
+            Assert.AreEqual(2,result.Rows.Count);
+        }
+        [Test]
+        public void Search_when_QuerySuccessful_OpenAndCloseConnection()
+        {
+            // Prepare
+            string keyword = "Dealer";
+            // Set up dependency injection
+            var dependencyInjection = new Mock<IDependency>();
+            dal = new DeaCustDAL(connectionMock.Object, dependencyInjection.Object);
+
+            // Act
+            var dt = dal.Search(keyword);
+
+            // Assert
+            connectionMock.Verify(d => d.Open(), Times.Once());
+            connectionMock.Verify(d => d.Close(), Times.Once());
+        }
+        [Test]
+        public void SearchDealerCustomerForTransaction_when_MethodThrowsException_OpenAndCloseConnection()
+        {
+            //Prepare
+            string keyword = "Dealer";
+            // Set up dependency injection
+            var dependencyInjection = new Mock<IDependency>();
+            dal = new DeaCustDAL(connectionMock.Object, dependencyInjection.Object);
+
+            //Act
+            var dt = dal.SearchDealerCustomerForTransaction(keyword);
+
+            //Assert
+            connectionMock.Verify(d => d.Open(), Times.Once());
+            connectionMock.Verify(d => d.Close(), Times.Once());
+        }
+        [Test]
+        public void Search_when_ExceptionThrown_CloseConnection()
+        {
+            // Prepare
+            string keyword = "Dealer";
+            // Set up dependency injection
+            var dependencyInjection = new Mock<IDependency>();
+            dependencyInjection.Setup(d => d.FillTheTable()).Throws(new Exception());
+            dal = new DeaCustDAL(connectionMock.Object, dependencyInjection.Object);
+
+            // Act
+            var dt = dal.Search(keyword);
+
+            // Assert
+            connectionMock.Verify(d => d.Close(), Times.Once());
+        }
+        ///
+        /// <summary>
+        /// T. S. END
+        /// </summary>
+        /// 
+
 
         [Test]
         public void Integration_Insert_QueryCorrectParams_ReturnsTrue()
@@ -286,6 +379,22 @@ namespace ActualTestProject
             bool result = repo.Insert(dc);
             // Assert
             Assert.IsFalse(result);
+        }
+        /// <summary>
+        /// T. S.
+        /// </summary>
+        [Test]
+        public void Integration_Search_CorrectQuery_ReturnsTrue()
+        {
+            IDeaCustRepository repo = new DeaCustDAL(new SqlConnection(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=AnyStore;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False"), 
+                new ConcreteDependencyForTestPurposes());
+            string keyword = "Dealer";
+            DataTable dt = null;
+
+            dt = repo.Search(keyword);
+
+            Assert.IsTrue(dt != null);
+
         }
     }
 }
