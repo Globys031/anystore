@@ -396,5 +396,102 @@ namespace ActualTestProject
             Assert.IsTrue(dt != null);
 
         }
+
+        
+        [Test]
+        public void Delete_when_passedCorrectObj_ReturnsTrue()
+        {
+            DeaCustBLL dc = new DeaCustBLL();
+            dc.type = "user";
+            dc.name = "user";
+            dc.email = "user@email.com";
+            dc.contact = "8972937278";
+            dc.address = "address";
+            dc.added_date = DateTime.Now;
+            dc.added_by = 3;
+            var dependencyInjection = new Mock<IDependency>();
+            dependencyInjection.Setup(d => d.AddValues(dc));
+            dependencyInjection.Setup(d => d.AddDeleteValues(dc));
+            dependencyInjection.Setup(d => d.ExecuteCommand()).Returns(1);
+            dal = new DeaCustDAL(connectionMock.Object, dependencyInjection.Object);
+
+            // Act
+            bool result = dal.Delete(dc);
+
+            // Assert
+            Assert.IsTrue(result);
+        }
+
+        [Test]
+        public void Delete_when_passed_null_ReturnsFalse()
+        {
+            DeaCustBLL dc = null;
+            var dependencyInjection = new Mock<IDependency>();
+            dependencyInjection.Setup(d => d.AddDeleteValues(dc));
+            dependencyInjection.Setup(d => d.ExecuteCommand()).Returns(0);
+            dal = new DeaCustDAL(connectionMock.Object, dependencyInjection.Object);
+
+            // Act
+            bool result = dal.Delete(dc);
+
+            // Assert
+            Assert.IsFalse(result);
+        }
+
+        [Test]
+        public void Delete_QuerySuccessful_ConnectionOpenedAndClosed()
+        {
+            // Prepare
+            // Set up dependency injection
+            var dependencyInjection = new Mock<IDependency>();
+            dal = new DeaCustDAL(connectionMock.Object, dependencyInjection.Object);
+
+            // Act
+            bool result = dal.Delete(dc);
+
+            // Assert
+            connectionMock.Verify(d => d.Open(), Times.Once());
+            connectionMock.Verify(d => d.Close(), Times.Once());
+        }
+
+        [Test]
+        public void Delete_AnyExceptionThrown_ConnectionClosedBeforeExit()
+        {
+            // Prepare
+            // Set up dependency injection
+            var dependencyInjection = new Mock<IDependency>();
+            dependencyInjection.Setup(d => d.ExecuteCommand()).Throws(new Exception());
+            dal = new DeaCustDAL(connectionMock.Object, dependencyInjection.Object);
+
+            // Act
+            bool result = dal.Delete(dc);
+
+            // Assert
+            connectionMock.Verify(d => d.Close(), Times.Once());
+        }
+
+        [Test]
+        public void Integration_Delete_AfterInsertion_ReturnsTrue()
+        {
+            // Prepare
+            IDeaCustRepository repo = new DeaCustDAL(new SqlConnection(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=AnyStore;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False"), new ConcreteDependencyForTestPurposes());
+           
+            DeaCustBLL dcToDelete = new DeaCustBLL();
+            dcToDelete.type = "userToDelete";
+            dcToDelete.name = "userToDelete";
+            dcToDelete.email = "userToDelete@email.com";
+            dcToDelete.contact = "8972937278";
+            dcToDelete.address = "address";
+            dcToDelete.added_date = DateTime.Now;
+            dcToDelete.added_by = 4;
+
+            repo.Insert(dcToDelete);
+
+            // Act
+            // ExecuteCommand() return 0 for some reason -> BUG?
+            bool result = repo.Delete(dcToDelete);
+            // Assert
+            Assert.IsTrue(result);
+        }
     }
 }

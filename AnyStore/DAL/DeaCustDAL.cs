@@ -75,7 +75,8 @@ namespace AnyStore.DAL
         public IDependency dep;
         public SqlCommand cmd;
 
-        public DeaCustDAL(IDependency dep) {
+        public DeaCustDAL(IDependency dep)
+        {
             _dbConnection = new SqlConnection(ConfigurationManager.ConnectionStrings["connstrng"].ConnectionString);
             this.dep = dep;
         }
@@ -110,7 +111,7 @@ namespace AnyStore.DAL
                 //Passign the value from SQL Data Adapter to DAta table
                 adapter.Fill(dt);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
@@ -145,7 +146,7 @@ namespace AnyStore.DAL
                 int rows = dep.ExecuteCommand();
 
                 //If the query is executed successfully then the value of rows will be greater than 0 else it will be less than 0
-                if(rows>0)
+                if (rows > 0)
                 {
                     //Query Executed Successfully
                     isSuccess = true;
@@ -156,7 +157,7 @@ namespace AnyStore.DAL
                     isSuccess = false;
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 dep.ShowMessage(ex.Message);
             }
@@ -188,7 +189,7 @@ namespace AnyStore.DAL
 
                 //Int varialbe to check if the query executed successfully or not
                 int rows = dep.ExecuteCommand();
-                if(rows>0)
+                if (rows > 0)
                 {
                     //Query Executed Successfully 
                     isSuccess = true;
@@ -199,7 +200,7 @@ namespace AnyStore.DAL
                     isSuccess = false;
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 dep.ShowMessage(ex.Message);
             }
@@ -230,7 +231,7 @@ namespace AnyStore.DAL
                 _dbConnection.Open();
                 //integer variable
                 var rows = dep.ExecuteCommand();
-                if(rows>0)
+                if (rows > 0)
                 {
                     //Query Executed Successfully 
                     isSuccess = true;
@@ -241,7 +242,7 @@ namespace AnyStore.DAL
                     isSuccess = false;
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 dep.ShowMessage(ex.Message);
             }
@@ -261,18 +262,18 @@ namespace AnyStore.DAL
             try
             {
                 //Write the Query to Search Dealer or Customer Based in id, type and name
-                string sql = "SELECT * FROM tbl_dea_cust WHERE id LIKE '%"+keyword+"%' OR type LIKE '%"+keyword+"%' OR name LIKE '%"+keyword+"%'";
-                
+                string sql = "SELECT * FROM tbl_dea_cust WHERE id LIKE '%" + keyword + "%' OR type LIKE '%" + keyword + "%' OR name LIKE '%" + keyword + "%'";
+
                 //SQL command to pass the value
                 dep.MakeNewCommand(sql, _dbConnection);
-                
+
                 //Open DB Connection
                 _dbConnection.Open();
                 var rows = dep.ExecuteCommand();
 
                 dt = dep.FillTheTable();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
@@ -282,7 +283,7 @@ namespace AnyStore.DAL
             }
 
             return dt;
-           
+
         }
         #endregion
         #region METHOD TO SAERCH DEALER Or CUSTOMER FOR TRANSACTON MODULE
@@ -299,7 +300,7 @@ namespace AnyStore.DAL
                 //Open the DAtabase Connection
                 _dbConnection.Open();
                 //Write a SQL Query to Search Dealer or Customer Based on Keywords
-                string sql = "SELECT name, email, contact, address from tbl_dea_cust WHERE id LIKE '%"+keyword+"%' OR name LIKE '%"+keyword+"%'";
+                string sql = "SELECT name, email, contact, address from tbl_dea_cust WHERE id LIKE '%" + keyword + "%' OR name LIKE '%" + keyword + "%'";
 
                 //Create a Sql Data Adapter to Execute the Query
                 SqlDataAdapter adapter = new SqlDataAdapter(sql, (SqlConnection)_dbConnection);
@@ -310,7 +311,7 @@ namespace AnyStore.DAL
                 adapter.Fill(dt);
 
                 //If we have values on dt we need to save it in dealerCustomer BLL
-                if(dt.Rows.Count>0)
+                if (dt.Rows.Count > 0)
                 {
                     dc.name = dt.Rows[0]["name"].ToString();
                     dc.email = dt.Rows[0]["email"].ToString();
@@ -319,7 +320,7 @@ namespace AnyStore.DAL
                 }
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
@@ -344,7 +345,7 @@ namespace AnyStore.DAL
             try
             {
                 //SQL Query to Get id based on Name
-                string sql = "SELECT id FROM tbl_dea_cust WHERE name='"+Name+"'";
+                string sql = "SELECT id FROM tbl_dea_cust WHERE name='" + Name + "'";
                 //Create the SQL Data Adapter to Execute the Query
                 SqlDataAdapter adapter = new SqlDataAdapter(sql, (SqlConnection)_dbConnection);
 
@@ -352,13 +353,13 @@ namespace AnyStore.DAL
 
                 //Passing the CAlue from Adapter to DAtatable
                 adapter.Fill(dt);
-                if(dt.Rows.Count>0)
+                if (dt.Rows.Count > 0)
                 {
                     //Pass the value from dt to DeaCustBLL dc
                     dc.id = int.Parse(dt.Rows[0]["id"].ToString());
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
