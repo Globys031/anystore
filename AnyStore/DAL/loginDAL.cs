@@ -11,7 +11,7 @@ using System.Windows.Forms;
 
 namespace AnyStore.DAL
 {
-    class loginDAL
+    public class loginDAL
     {
         //Static String to Connect Database
         static string myconnstrng = ConfigurationManager.ConnectionStrings["connstrng"].ConnectionString;

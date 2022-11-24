@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 namespace AnyStore.DAL
 {
-    class transactionDetailDAL
+    public class transactionDetailDAL
     {
         //Create Connection String
         static string myconnstrng = ConfigurationManager.ConnectionStrings["connstrng"].ConnectionString;

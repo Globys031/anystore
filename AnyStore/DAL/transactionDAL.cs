@@ -11,7 +11,7 @@ using System.Windows.Forms;
 
 namespace AnyStore.DAL
 {
-    class transactionDAL
+    public class transactionDAL
     {
         //Create a connection string variable
         static string myconnstrng = ConfigurationManager.ConnectionStrings["connstrng"].ConnectionString;
